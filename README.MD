@@ -116,3 +116,21 @@ This project reflects the transition from IT Support to Data Analysis, combining
 ## 📬 Contact
 
 Open to opportunities in Data Analysis, Business Intelligence, and Technical/Data hybrid roles.
+
+---
+
+## 🚀 Evolution Roadmap (SupportOps)
+
+This project is currently being evolved progressively into a full-stack ITSM & Analytics platform named **SupportOps**, moving from static CSV data analysis to a robust production-ready API and intelligent automation.
+
+### Current Progress
+
+- [x] **V0: Data Analysis (Baseline)** - Original R/RStudio analysis and EDA.
+- [x] **V1: Data Model + PostgreSQL** - Migrated historical dataset into a relational database with ITSM principles (SLAs, Agents, History).
+- [x] **V2: Python + Pandas Analytics Pipeline** - Automated ETL generating advanced ITSM metrics (SLA Compliance, First Response Time, Volume, Aggregations).
+- [ ] **V3: FastAPI / Backend** - RESTful API for ticket and operations management.
+- [ ] **V4: ITSM + Ticket Lifecycle + SLA** - Transition logic, SLA breached engines.
+- [ ] **V5: Operational Dashboard** - UI for Analytics and Ticket operations.
+- [ ] **V6: Automation** - n8n workflows for notifications and proactive alerts.
+- [ ] **V7: AI-Assisted Support** - LLM-powered ticket classification and resolution suggestion.
+- [ ] **V8: Production Readiness** - Testing, Dockerization, CI/CD.
