@@ -128,9 +128,31 @@ This project is currently being evolved progressively into a full-stack ITSM & A
 - [x] **V0: Data Analysis (Baseline)** - Original R/RStudio analysis and EDA.
 - [x] **V1: Data Model + PostgreSQL** - Migrated historical dataset into a relational database with ITSM principles (SLAs, Agents, History).
 - [x] **V2: Python + Pandas Analytics Pipeline** - Automated ETL generating advanced ITSM metrics (SLA Compliance, First Response Time, Volume, Aggregations).
-- [ ] **V3: FastAPI / Backend** - RESTful API for ticket and operations management.
-- [ ] **V4: ITSM + Ticket Lifecycle + SLA** - Transition logic, SLA breached engines.
-- [ ] **V5: Operational Dashboard** - UI for Analytics and Ticket operations.
+- [x] **V3: FastAPI / Backend** - RESTful API for ticket and operations management (CRUD, pagination, filters, SLA block, health check).
+- [x] **V4: ITSM + Ticket Lifecycle + SLA** - Status transition state machine with history tracking and SLA breach engine (on_track / at_risk / breached / met).
+- [x] **V5: Operational Dashboard** - Painel web servido pela API com KPIs, gráficos SVG, backlog, tabela de tickets com filtros e registro manual de incidentes.
 - [ ] **V6: Automation** - n8n workflows for notifications and proactive alerts.
 - [ ] **V7: AI-Assisted Support** - LLM-powered ticket classification and resolution suggestion.
-- [ ] **V8: Production Readiness** - Testing, Dockerization, CI/CD.
+- [ ] **V8: Production Readiness** - CI/CD, migrations versionadas, observabilidade.
+
+### 🧰 Backend (V3 + V4 + V5)
+
+```bash
+docker compose up -d --build
+```
+
+- Painel operacional: `http://localhost:8010/ui`
+- API docs: `http://localhost:8010/docs`
+- Testes: `docker compose up -d db-test && backend/venv/bin/python -m pytest backend/tests -c backend/pytest.ini`
+
+O serviço `api` roda em container com `restart: unless-stopped`, então o painel
+sobe junto com a máquina e não depende de terminal aberto.
+
+Para desenvolver sem Docker:
+
+```bash
+DATABASE_URL="postgresql://supportops:password@localhost:5435/supportops" \
+  backend/venv/bin/uvicorn backend.app.main:app --reload --port 8010
+```
+
+- Referência completa dos endpoints: [docs/api.md](docs/api.md)

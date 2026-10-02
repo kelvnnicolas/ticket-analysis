@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SupportOps — Painel Operacional</title>
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">SO</span>
+    <div>
+      <h1>SupportOps</h1>
+      <p class="sub">Painel operacional de incidentes</p>
+    </div>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button class="tab is-active" data-view="dashboard" role="tab">Dashboard</button>
+    <button class="tab" data-view="tickets" role="tab">Tickets</button>
+    <button class="tab" data-view="novo" role="tab">Novo incidente</button>
+  </nav>
+  <div class="status">
+    <span id="health-dot" class="dot dot-unknown" aria-hidden="true"></span>
+    <span id="health-text">conectando…</span>
+    <button id="refresh" class="btn btn-ghost" title="Atualizar dados">Atualizar</button>
+  </div>
+</header>
+
+<main>
+  <!-- ===================== DASHBOARD ===================== -->
+  <section class="view is-active" id="view-dashboard">
+    <div class="kpi-grid" id="kpi-grid"></div>
+
+    <div class="panel-grid">
+      <article class="panel">
+        <h2>Volume por categoria</h2>
+        <div id="chart-category" class="chart"></div>
+      </article>
+
+      <article class="panel">
+        <h2>Conformidade de SLA por prioridade</h2>
+        <div id="chart-sla" class="chart"></div>
+        <p class="hint" id="sla-hint"></p>
+      </article>
+
+      <article class="panel">
+        <h2>Abertura e resolução por dia</h2>
+        <div id="chart-trend" class="chart chart-tall"></div>
+      </article>
+
+      <article class="panel">
+        <h2>Carga por agente</h2>
+        <div id="chart-agent" class="chart"></div>
+      </article>
+    </div>
+
+    <article class="panel">
+      <h2>Backlog atual <span class="chip" id="backlog-count">0</span></h2>
+      <div id="backlog-list" class="backlog"></div>
+    </article>
+  </section>
+
+  <!-- ===================== TICKETS ===================== -->
+  <section class="view" id="view-tickets">
+    <article class="panel">
+      <form class="filters" id="ticket-filters">
+        <label>
+          <span>Status</span>
+          <select name="status">
+            <option value="">Todos</option>
+            <option>New</option><option>Assigned</option>
+            <option>In Progress</option><option>Resolved</option><option>Closed</option>
+          </select>
+        </label>
+        <label>
+          <span>Prioridade</span>
+          <select name="priority">
+            <option value="">Todas</option>
+            <option>High</option><option>Medium</option><option>Low</option>
+          </select>
+        </label>
+        <label>
+          <span>Situação SLA</span>
+          <select name="sla_state">
+            <option value="">Todas</option>
+            <option value="met">Cumprido</option>
+            <option value="breached">Violado</option>
+            <option value="at_risk">Em risco</option>
+            <option value="on_track">Em dia</option>
+          </select>
+        </label>
+        <label>
+          <span>Categoria</span>
+          <select name="category_id" id="filter-category"><option value="">Todas</option></select>
+        </label>
+        <label>
+          <span>Agente</span>
+          <select name="agent_id" id="filter-agent"><option value="">Todos</option></select>
+        </label>
+        <label class="grow">
+          <span>Busca</span>
+          <input type="search" name="search" placeholder="issue_type, descrição, sistema…">
+        </label>
+        <button class="btn" type="submit">Filtrar</button>
+      </form>
+
+      <div class="table-wrap">
+        <table class="table" id="tickets-table">
+          <thead>
+            <tr>
+              <th>#</th><th>Incidente</th><th>Categoria</th><th>Agente</th>
+              <th>Status</th><th>SLA</th><th>Aberto em</th><th>Ações</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="pager">
+        <button class="btn btn-ghost" id="page-prev">Anterior</button>
+        <span id="page-info"></span>
+        <button class="btn btn-ghost" id="page-next">Próxima</button>
+      </div>
+    </article>
+  </section>
+
+  <!-- ===================== NOVO INCIDENTE ===================== -->
+  <section class="view" id="view-novo">
+    <div class="split">
+      <article class="panel">
+        <h2>Registrar incidente manualmente</h2>
+        <form class="form" id="ticket-form">
+          <label>
+            <span>Título do incidente *</span>
+            <input name="issue_type" required maxlength="100" placeholder="Ex: Impressora offline - Andar 3">
+          </label>
+          <label>
+            <span>Descrição</span>
+            <textarea name="description" rows="3" placeholder="Detalhe do problema relatado"></textarea>
+          </label>
+          <div class="row">
+            <label>
+              <span>Categoria *</span>
+              <select name="category_id" id="form-category" required></select>
+            </label>
+            <label>
+              <span>Prioridade *</span>
+              <select name="priority" id="form-priority" required>
+                <option>High</option><option>Medium</option><option>Low</option>
+              </select>
+            </label>
+          </div>
+          <div class="row">
+            <label>
+              <span>Agente</span>
+              <select name="agent_id" id="form-agent"><option value="">Não atribuído</option></select>
+            </label>
+            <label>
+              <span>Solicitante</span>
+              <select name="customer_id" id="form-customer"><option value="">Não informado</option></select>
+            </label>
+          </div>
+          <label>
+            <span>Sistema operacional</span>
+            <select name="operating_system">
+              <option value="">Não informado</option>
+              <option>Windows</option><option>Linux</option><option>macOS</option>
+            </select>
+          </label>
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Registrar incidente</button>
+            <span id="form-feedback" class="feedback"></span>
+          </div>
+        </form>
+      </article>
+
+      <article class="panel" id="detail-panel" hidden>
+        <h2>Detalhe do incidente</h2>
+        <div id="ticket-detail"></div>
+      </article>
+    </div>
+  </section>
+</main>
+
+<!-- Modal de transição de status -->
+<div class="modal" id="modal" hidden>
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <h3 id="modal-title">Alterar status</h3>
+    <p class="modal-sub" id="modal-sub"></p>
+    <label>
+      <span>Novo status</span>
+      <select id="modal-status"></select>
+    </label>
+    <label>
+      <span>Nota (opcional)</span>
+      <textarea id="modal-note" rows="2" maxlength="500"></textarea>
+    </label>
+    <p class="feedback" id="modal-feedback"></p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" data-close>Cancelar</button>
+      <button class="btn btn-primary" id="modal-confirm">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

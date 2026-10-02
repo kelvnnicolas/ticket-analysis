@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:15-alpine
@@ -18,6 +16,37 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+
+  db-test:
+    image: postgres:15-alpine
+    container_name: supportops_db_test
+    environment:
+      POSTGRES_USER: supportops
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: supportops_test
+    ports:
+      - "5436:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U supportops -d supportops_test"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: supportops_api
+    environment:
+      DATABASE_URL: postgresql://supportops:password@db:5432/supportops
+    ports:
+      - "8010:8010"
+    depends_on:
+      db:
+        condition: service_healthy
     restart: unless-stopped
 
 volumes:

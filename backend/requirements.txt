@@ -1,0 +1,8 @@
+fastapi>=0.141,<1.0
+uvicorn[standard]>=0.30
+# SQLAlchemy 2.1 troca o driver padrão do dialeto Postgres para psycopg (v3).
+# O projeto usa psycopg2, então o teto fica em 2.0.x.
+sqlalchemy>=2.0,<2.1
+psycopg2-binary>=2.9,<3.0
+pydantic>=2.9,<3.0
+pydantic-settings>=2.5
